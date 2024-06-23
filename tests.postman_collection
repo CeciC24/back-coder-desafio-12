@@ -142,6 +142,76 @@
 					"response": []
 				},
 				{
+					"name": "Add product to cart | Error: producto no encontrado",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/cart/663e81663b4483c76a98b391/product/idinvalido",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cart",
+								"663e81663b4483c76a98b391",
+								"product",
+								"idinvalido"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add product to cart | Error: carrito no encontrado",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/cart/idinvalido/product/663c0f3616fa47faa1537dfb",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"cart",
+								"idinvalido",
+								"product",
+								"663c0f3616fa47faa1537dfb"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete product from cart",
 					"event": [
 						{
@@ -159,7 +229,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/cart/660db62eeb3d157e265feddf/product/65fd8fbc94d6fa9905eebf4f",
+							"raw": "http://localhost:8080/api/cart/66787ec088962b3ab7c2a6e8/product/663c0eee16fa47faa1537df5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -168,9 +238,9 @@
 							"path": [
 								"api",
 								"cart",
-								"660db62eeb3d157e265feddf",
+								"66787ec088962b3ab7c2a6e8",
 								"product",
-								"65fd8fbc94d6fa9905eebf4f"
+								"663c0eee16fa47faa1537df5"
 							]
 						}
 					},
@@ -442,7 +512,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/categories/663e861d3df427152828fcca",
+							"raw": "http://localhost:8080/api/categories/6678848ff87267c59bb01891",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -451,7 +521,7 @@
 							"path": [
 								"api",
 								"categories",
-								"663e861d3df427152828fcca"
+								"6678848ff87267c59bb01891"
 							]
 						}
 					},
@@ -513,7 +583,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Jaime\",\r\n    \"message\": \"Hola, ¿qué tal?\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Reba\",\r\n    \"message\": \"Hola, ¿qué tal?\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -775,7 +845,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:8080/api/products/663c0ea816fa47faa1537def",
+							"raw": "http://localhost:8080/api/products/663c0eee16fa47faa1537df5",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -784,7 +854,7 @@
 							"path": [
 								"api",
 								"products",
-								"663c0ea816fa47faa1537def"
+								"663c0eee16fa47faa1537df5"
 							]
 						}
 					},
@@ -850,7 +920,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Producto de prueba 13\",\r\n    \"description\": \"Este es el producto de prueba 13\",\r\n    \"code\": \"abc123\",\r\n    \"price\": 1200,\r\n    \"stock\": 27,\r\n    \"category\": \"Lentes\"\r\n}",
+							"raw": "{\r\n    \"title\": \"Producto de prueba 13\",\r\n    \"description\": \"Este es el producto de prueba 13\",\r\n    \"code\": \"abc100\",\r\n    \"price\": 1200,\r\n    \"stock\": 27,\r\n    \"category\": \"663c0e7216fa47faa1537deb\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -891,7 +961,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Producto de prueba 99\",\r\n    \"description\": \"Este es el producto de prueba 99\",\r\n    \"code\": \"abc199\",\r\n    \"price\": 1200,\r\n    \"category\": \"Lentes\"\r\n}",
+							"raw": "{\r\n    \"title\": \"Producto de prueba 99\",\r\n    \"description\": \"Este es el producto de prueba 99\",\r\n    \"code\": \"abc199\",\r\n    \"price\": 1200,\r\n    \"category\": \"66606826107db41e99409513\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
