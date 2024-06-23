@@ -20,4 +20,3 @@ export default function createExpressApp() {
 		throw new Error('No se pudo crear la app: ' + error.message)
 	}
 }
-

@@ -21,7 +21,7 @@ function main(){
 		app.use(errorHandler)
 
 	} catch (error) {
-		console.log('Error al inicializar la app: ' + error.message)
+		console.error('Error al inicializar la app: ' + error.message)
 	}
 }
 

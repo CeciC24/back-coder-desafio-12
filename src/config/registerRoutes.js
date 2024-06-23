@@ -38,7 +38,7 @@ const registerRoutes = (app) => {
 		// Otras rutas
 		app.use('/', EmailsRouter)
 
-		app.get('/mockingproducts', async (req, res) => {
+		app.get('/mockingproducts', async (req, res, next) => {
 			try {
 				let products = []
 				for (let i = 0; i < 100; i++) {
@@ -46,10 +46,21 @@ const registerRoutes = (app) => {
 				}
 				res.send(products)
 			} catch (error) {
-				console.log(error)
+				next(error)
 			}
 		})
 
+		// Ruta para probar loggers
+		app.get('/loggerTest', (req, res) => {
+			req.logger.debug('Debug log')
+			req.logger.http('HTTP log')
+			req.logger.info('Info log')
+			req.logger.warning('Warning log')
+			req.logger.error('Error log')
+			req.logger.fatal('Fatal log')
+			
+			res.send({ message: 'Los logs se han registrado correctamente' })
+		})
 	} catch (error) {
 		throw new Error('No se pudieron registrar las rutas: ' + error.message)
 	}

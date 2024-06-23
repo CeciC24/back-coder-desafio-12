@@ -14,4 +14,5 @@ export default {
     tokenCookieName: process.env.TOKEN_COOKIE_NAME,
     emailUser: process.env.EMAIL_USER,
     emailPassword: process.env.EMAIL_PASS,
+    nodeEnv: process.env.NODE_ENV,
 }
