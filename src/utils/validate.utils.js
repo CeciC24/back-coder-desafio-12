@@ -23,7 +23,7 @@ export default class Validate {
 	}
 
 	static existID = async (id, manager, tipo) => {
-		if (!await manager.getById(id)) {
+		if (!(await manager.getById(id))) {
 			CustomError.createError({
 				name: 'Error al buscar ' + tipo,
 				message: generateIDErrorInfo(id),

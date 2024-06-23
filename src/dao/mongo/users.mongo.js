@@ -1,17 +1,35 @@
 import { createHash } from '../../utils/bcrypt.utils.js'
 import UsersRepository from '../../repositories/users.repository.js'
+import CustomError from '../../utils/customError.utils.js'
+import ErrorTypes from '../../utils/errorTypes.utils.js'
 
 export default class UserManager {
 	constructor() {
-        this.repository = new UsersRepository()
-    }
+		this.repository = new UsersRepository()
+	}
 
 	async get() {
-		return await this.repository.find()
+		try {
+			return await this.repository.find()
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al obtener usuarios',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
+		}
 	}
 
 	async getById(id) {
-		return await this.repository.findById(id)
+		try {
+			return await this.repository.findById(id)
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al obtener usuario',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
+		}
 	}
 
 	async create(userData) {
@@ -19,27 +37,51 @@ export default class UserManager {
 			userData.password = createHash(userData.password)
 			return await this.repository.create(userData)
 		} catch (error) {
-			console.error(error.message)
+			CustomError.createError({
+				name: 'Error al crear usuario',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
 		}
 	}
 
 	async update(id, userData) {
-		if (userData.password) {
-			userData.password = createHash(userData.password)
+		try {
+			if (userData.password) {
+				userData.password = createHash(userData.password)
+			}
+			await this.repository.updateOne(id, userData)
+			return await this.repository.findById(id)
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al actualizar usuario',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
 		}
-		await this.repository.updateOne(id, userData)
-		return await this.repository.findById(id)
 	}
 
 	async delete(id) {
-		return await this.repository.findByIdAndDelete(id)
+		try {
+			return await this.repository.findByIdAndDelete(id)
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al eliminar usuario',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
+		}
 	}
 
 	async getAllWithCart() {
 		try {
 			return await this.repository.getAllWithCart()
 		} catch (error) {
-			console.log('Error al obtener los usuarios con carritos')
+			CustomError.createError({
+				name: 'Error al obtener los usuarios con carritos',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
 		}
 	}
 
@@ -53,7 +95,11 @@ export default class UserManager {
 			// const users = paginateFormat(result, '/users')
 			return await this.repository.paginate(query, options)
 		} catch (error) {
-			throw new Error('Error al obtener usuarios paginados')
+			CustomError.createError({
+				name: 'Error al obtener usuarios paginados',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
 		}
 	}
 }

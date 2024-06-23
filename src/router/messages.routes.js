@@ -10,11 +10,11 @@ import Validate from '../utils/validate.utils.js'
 const MsgManager = new MessagesManager()
 const MessagesRouter = Router()
 
-MessagesRouter.get('/', async (req, res) => {
+MessagesRouter.get('/', async (req, res, next) => {
 	try {
 		res.status(200).send(await MsgManager.get())
 	} catch (error) {
-		res.status(500).send({ error: 'Error al obtener mensajes' })
+		next(error)
 	}
 })
 
@@ -30,14 +30,14 @@ MessagesRouter.get('/:mid', async (req, res, next) => {
 	}
 })
 
-MessagesRouter.post('/', passportCall('current'), authorization('user'), async (req, res) => {
+MessagesRouter.post('/', passportCall('current'), authorization('user'), async (req, res, next) => {
 	let messageData = req.body
 
 	try {
 		const newMessage = new MessageDTO(messageData)
 		res.status(200).send(await MsgManager.create(newMessage))
 	} catch (error) {
-		res.status(500).send({ error: 'Error al agregar mensaje' })
+		next(error)
 	}
 })
 

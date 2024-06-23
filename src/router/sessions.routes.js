@@ -6,6 +6,8 @@ import AuthManager from '../dao/services/auth.service.js'
 import { authorization } from '../middlewares/auth.middleware.js'
 import { passportCall } from '../utils/jwt.utils.js'
 import { CurrentUserDTO } from '../dao/DTOs/user.dto.js'
+import CustomError from '../utils/customError.utils.js'
+import ErrorTypes from '../utils/errorTypes.utils.js'
 
 const SessionsRouter = Router()
 const authManager = new AuthManager()
@@ -17,11 +19,16 @@ SessionsRouter.get('/current', passportCall('current'), async (req, res) => {
 })
 
 // * Login - JWT
-SessionsRouter.post('/login', async (req, res) => {
+SessionsRouter.post('/login', async (req, res, next) => {
 	try {
 		const { email, password } = req.body
 		if (!email || !password) {
-			return res.status(400).send({ status: 'error', error: 'Faltan datos' })
+			CustomError.createError({
+				name: 'Error de autenticación',
+				message: 'Faltan datos',
+				code: ErrorTypes.ERROR_DATA,
+				cause: 'No se enviaron los datos necesarios',
+			})
 		}
 
 		const userToken = await authManager.login({ email, password })
@@ -34,7 +41,7 @@ SessionsRouter.post('/login', async (req, res) => {
 				.send({ status: 'success', message: userToken.message })
 		}
 	} catch (error) {
-		res.send({ status: 'error', message: error.message })
+		next(error)
 	}
 })
 
@@ -48,7 +55,7 @@ SessionsRouter.post('/logout', (req, res) => {
 })
 
 // * Register - JWT
-SessionsRouter.post('/register', async (req, res) => {
+SessionsRouter.post('/register', async (req, res, next) => {
 	try {
 		const { first_name, last_name, email, age, password } = req.body
 
@@ -62,12 +69,12 @@ SessionsRouter.post('/register', async (req, res) => {
 				.send({ status: 'success', message: userToken.message })
 		}
 	} catch (error) {
-		res.send({ status: 'error', message: error.message })
+		next(error)
 	}
 })
 
 // * Restore - JWT
-SessionsRouter.post('/restore', async (req, res) => {
+SessionsRouter.post('/restore', async (req, res, next) => {
 	try {
 		const { email, password } = req.body
 
@@ -81,7 +88,7 @@ SessionsRouter.post('/restore', async (req, res) => {
 				.send({ status: 'success', message: userToken.message })
 		}
 	} catch (error) {
-		res.status(500).send({ status: 'error', error: error.message })
+		next(error)
 	}
 })
 

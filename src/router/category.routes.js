@@ -7,12 +7,12 @@ import Validate from '../utils/validate.utils.js'
 const CategoriesRouter = Router()
 const categoryMngr = new CategoryManager()
 
-CategoriesRouter.get('/', async (req, res) => {
+CategoriesRouter.get('/', async (req, res, next) => {
 	try {
 		const categories = await categoryMngr.get()
 		res.status(201).json(categories)
 	} catch (error) {
-		res.status(500).json({ message: error.message })
+		next(error)
 	}
 })
 
@@ -28,14 +28,14 @@ CategoriesRouter.get('/:id', async (req, res, next) => {
 	}
 })
 
-CategoriesRouter.post('/', async (req, res) => {
+CategoriesRouter.post('/', async (req, res, next) => {
 	const categoryData = req.body
 
 	try {
 		const newCategory = new CategoryDTO(categoryData)
 		res.status(201).json(await categoryMngr.create(newCategory))
 	} catch (error) {
-		res.status(400).json({ message: error.message })
+		next(error)
 	}
 })
 

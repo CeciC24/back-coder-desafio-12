@@ -21,7 +21,7 @@ ProductRouter.get('/', async (req, res, next) => {
 
 		return res.status(200).json({ response })
 	} catch (error) {
-		return res.status(500).send({ error: 'Error al obtener productos' })
+		next(error)
 	}
 })
 

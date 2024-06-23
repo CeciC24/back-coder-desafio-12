@@ -5,15 +5,17 @@ import { authorization } from '../middlewares/auth.middleware.js'
 import { passportCall } from '../utils/jwt.utils.js'
 
 import Validate from '../utils/validate.utils.js'
+import ProductManager from '../dao/mongo/products.mongo.js'
 
+const ProductMngr = new ProductManager()
 const CartMngr = new CartManager()
 const CartsRouter = Router()
 
-CartsRouter.get('/', async (req, res) => {
+CartsRouter.get('/', async (req, res, next) => {
 	try {
 		res.status(200).send(await CartMngr.get())
 	} catch (error) {
-		res.status(500).send({ error: 'Error al obtener carritos' })
+		next(error)
 	}
 })
 
@@ -29,12 +31,12 @@ CartsRouter.get('/:cid', async (req, res, next) => {
 	}
 })
 
-CartsRouter.post('/', async (req, res) => {
+CartsRouter.post('/', async (req, res, next) => {
 	try {
 		let newCart = await CartMngr.create()
 		res.status(200).send(newCart)
 	} catch (error) {
-		res.status(500).send({ error: 'Error al crear carrito' })
+		next(error)
 	}
 })
 

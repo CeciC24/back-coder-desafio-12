@@ -1,4 +1,6 @@
 import CartsRepository from '../../repositories/carts.repository.js'
+import CustomError from '../../utils/customError.utils.js'
+import ErrorTypes from '../../utils/errorTypes.utils.js'
 import ProductManager from './products.mongo.js'
 import TicketsManager from './tickets.mongo.js'
 
@@ -7,19 +9,43 @@ const TicketMngr = new TicketsManager()
 
 export default class CartManager {
 	constructor() {
-        this.repository = new CartsRepository()
-    }
+		this.repository = new CartsRepository()
+	}
 
 	async create(newCart = { products: [] }) {
-		return await this.repository.create(newCart)
+		try {
+			return await this.repository.create(newCart)
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al crear carrito',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
+		}
 	}
 
 	async get() {
-		return await this.repository.find()
+		try {
+			return await this.repository.find()
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al obtener carritos',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
+		}
 	}
 
 	async getById(id) {
-		return await this.repository.findById(id)
+		try {
+			return await this.repository.findById(id)
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al obtener carrito',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
+		}
 	}
 
 	async addProductToCart(cid, pid) {
@@ -36,12 +62,22 @@ export default class CartManager {
 					cart.products.push({ product: pid, quantity: 1 })
 				}
 			} else {
-				throw new Error(`⚠️  Product ID: ${pid} Not found`)
+				CustomError.createError({
+					name: 'Error al agregar producto al carrito',
+					message: 'Producto no encontrado',
+					code: ErrorTypes.ERROR_NOT_FOUND,
+					cause: `Producto ID: ${pid} no encontrado`,
+				})
 			}
 		} else {
-			throw new Error(`⚠️  Cart ID: ${cid} Not found`)
+			CustomError.createError({
+				name: 'Error al agregar producto al carrito',
+				message: 'Carrito no encontrado',
+				code: ErrorTypes.ERROR_NOT_FOUND,
+				cause: `Carrito ID: ${cid} no encontrado`,
+			})
 		}
-		
+
 		return await cart.save()
 	}
 
@@ -58,22 +94,40 @@ export default class CartManager {
 					cart.products.pull(productInCart)
 				}
 			} else {
-				throw new Error(`⚠️  Product ID: ${pid} Not found`)
+				CustomError.createError({
+					name: 'Error al eliminar producto del carrito',
+					message: 'Producto no encontrado',
+					code: ErrorTypes.ERROR_NOT_FOUND,
+					cause: `Producto ID: ${pid} no encontrado en Carrito ID: ${cid}`,
+				})
 			}
 		} else {
-			throw new Error(`⚠️  Cart ID: ${cid} Not found`)
+			CustomError.createError({
+				name: 'Error al eliminar producto del carrito',
+				message: 'Carrito no encontrado',
+				code: ErrorTypes.ERROR_NOT_FOUND,
+				cause: `Carrito ID: ${cid} no encontrado`,
+			})
 		}
 
 		return await cart.save()
 	}
 
 	async update(cid, newCartProducts) {
-		const cart = await this.getById(cid)
-		await this.empty(cart._id)
+		try {
+			const cart = await this.getById(cid)
+			await this.empty(cart._id)
 
-		cart.products = newCartProducts
+			cart.products = newCartProducts
 
-		return await cart.save()
+			return await cart.save()
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al actualizar carrito',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
+		}
 	}
 
 	async updateProductInCart(cid, pid, newQuantity) {
@@ -87,47 +141,81 @@ export default class CartManager {
 				if (productInCart) {
 					productInCart.quantity = newQuantity.quantity
 				} else {
-					throw new Error(`⚠️  Product ID: ${pid} Not found in Cart ID: ${cid}`)
+					CustomError.createError({
+						name: 'Error al actualizar producto en carrito',
+						message: 'Producto no encontrado',
+						code: ErrorTypes.ERROR_NOT_FOUND,
+						cause: `Producto ID: ${pid} no encontrado en Carrito ID: ${cid}`,
+					})
 				}
 			} else {
-				throw new Error(`⚠️  Product ID: ${pid} Not found`)
+				CustomError.createError({
+					name: 'Error al actualizar producto en carrito',
+					message: 'Producto no encontrado',
+					code: ErrorTypes.ERROR_NOT_FOUND,
+					cause: `Producto ID: ${pid} no encontrado`,
+				})
 			}
 		} else {
-			throw new Error(`⚠️  Cart ID: ${cid} Not found`)
+			CustomError.createError({
+				name: 'Error al actualizar producto en carrito',
+				message: 'Carrito no encontrado',
+				code: ErrorTypes.ERROR_NOT_FOUND,
+				cause: `Carrito ID: ${cid} no encontrado`,
+			})
 		}
 
 		return await cart.save()
 	}
 
 	async empty(id) {
-		let emptyCart = await this.repository.updateById(id, { products: [] })
-		return await emptyCart.save()
+		try {
+			let emptyCart = await this.repository.updateById(id, { products: [] })
+			return await emptyCart.save()
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al vaciar carrito',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
+		}
 	}
 
 	async purchaseCart(id, user) {
-		let cart = await this.getById(id)
-		let products = cart.products
+		try {
+			let cart = await this.getById(id)
+			let products = cart.products
 
-		let amountPurchased = 0
-		let productsNotPurchased = []
+			let amountPurchased = 0
+			let productsNotPurchased = []
 
-		products.forEach(async (product) => {
-			try {
-				await ProductMngr.purchase(product.product.id, product.quantity)
-				amountPurchased += product.product.price * product.quantity
-			} catch (error) {
-				productsNotPurchased.push({ product: product.product.id, quantity: product.quantity })
+			products.forEach(async (product) => {
+				try {
+					await ProductMngr.purchase(product.product.id, product.quantity)
+					amountPurchased += product.product.price * product.quantity
+				} catch (error) {
+					productsNotPurchased.push({ product: product.product.id, quantity: product.quantity })
+				}
+			})
+
+			TicketMngr.create({ amount: amountPurchased, purchaser: user.email })
+
+			await this.update(id, productsNotPurchased)
+
+			if (productsNotPurchased.length > 0) {
+				return (
+					`No se pudo realizar la compra de los siguientes productos: ` +
+					productsNotPurchased.map((p) => p.product)
+				)
 			}
-		})
 
-		TicketMngr.create({ amount: amountPurchased, purchaser: user.email })
-
-		await this.update(id, productsNotPurchased)
-
-		if (productsNotPurchased.length > 0) {
-			return `No se pudo realizar la compra de los siguientes productos: ` + productsNotPurchased.map((p) => p.product)
+			return await this.getById(id)
+		} catch (error) {
+			CustomError.createError({
+				name: 'Error al realizar compra',
+				message: error.message,
+				code: ErrorTypes.ERROR_INTERNAL_ERROR,
+			})
 		}
-
-		return await this.getById(id)
 	}
 }

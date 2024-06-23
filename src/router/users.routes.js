@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import passport from 'passport'
 import UserManager from '../dao/mongo/users.mongo.js'
 import UserDTO from '../dao/DTOs/user.dto.js'
 
@@ -10,12 +9,12 @@ const UsersRouter = Router()
 const UserMngr = new UserManager()
 
 // Obtener todos los usuarios
-UsersRouter.get('/', async (req, res) => {
+UsersRouter.get('/', async (req, res, next) => {
 	try {
 		const users = await UserMngr.get()
 		res.status(200).json({ users })
 	} catch (error) {
-		res.status(500).json({ error: `Error al recibir los usuarios` })
+		next(error)
 	}
 })
 
@@ -32,15 +31,14 @@ UsersRouter.get('/:id', async (req, res, next) => {
 })
 
 // Crear un nuevo usuario
-UsersRouter.post('/', async (req, res) => {
+UsersRouter.post('/', async (req, res, next) => {
 	try {
 		const userData = req.body
 		const newUser = new UserDTO(userData)
 		const result = await UserMngr.create(newUser)
 		res.status(201).json({ result })
 	} catch (error) {
-		console.error(`Error al crear el usuario: ${error}`)
-		res.status(500).json({ error: `Error al crear el usuario` })
+		next(error)
 	}
 })
 
